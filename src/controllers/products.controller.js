@@ -42,11 +42,24 @@ const createdProduct = async (req, res) => {
 
 const updatedProduct = async (req, res) => {
   try {
-    const product = await Products.findByIdAndUpdate(req.params.id, req.body, {
+    let data = req.body;
+    if (req.file) {
+      const urlImage = await cloudinary.uploader
+        .upload(req.file.path)
+        .then((resp) => {
+          return resp.url;
+        })
+        .catch((err) => {
+          err.message;
+        });
+
+      data = { ...data, urlImage: urlImage };
+    }
+    const product = await Products.findByIdAndUpdate(req.params.id, data, {
       new: true,
     });
 
-    res.status(200).json(product);
+    res.status(200).json({ message: "Update Ok", data: product });
   } catch (err) {
     res.status(500).send(err.message);
   }

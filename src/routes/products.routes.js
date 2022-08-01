@@ -8,7 +8,7 @@ router
   .get("/", productsController.getAllProducts)
   .get("/:id", productsController.getOneProduct)
   .post("/", upload.single("img"), productsController.createdProduct)
-  .put("/:id", productsController.updatedProduct)
+  .put("/:id", upload.single("img"), productsController.updatedProduct)
   .delete("/:id", productsController.deletedProduct)
   .post("/uploadImage", upload.single("avatar"), (req, res) => {
     cloudinary.uploader
