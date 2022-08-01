@@ -29,15 +29,6 @@ const createdProduct = async (req, res) => {
   }
 };
 
-const deletedProduct = async (req, res) => {
-  try {
-    let result = await Products.findByIdAndDelete(req.params.id);
-    res.status(204).json();
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-};
-
 const updatedProduct = async (req, res) => {
   try {
     const product = await Products.findByIdAndUpdate(req.params.id, req.body, {
@@ -45,6 +36,15 @@ const updatedProduct = async (req, res) => {
     });
 
     res.status(200).json(product);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+};
+
+const deletedProduct = async (req, res) => {
+  try {
+    let result = await Products.findByIdAndDelete(req.params.id);
+    res.status(204).json();
   } catch (err) {
     res.status(500).send(err.message);
   }

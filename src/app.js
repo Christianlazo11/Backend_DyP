@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 3000;
 
 //Routes
 import productsRoutes from "./routes/products.routes";
+import userRoutes from "./routes/user.routes";
 
 app.set("pkg", pkg);
 
@@ -23,5 +24,6 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/products", productsRoutes);
+app.use("/api/v1/users", userRoutes);
 
 export { app, PORT };

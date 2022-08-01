@@ -8,7 +8,8 @@ const userSchema = new Schema(
     },
     lastName: {
       type: String,
-      unique: true,
+      required: true,
+      unique: false,
     },
     email: {
       type: String,
@@ -31,4 +32,4 @@ const userSchema = new Schema(
   }
 );
 
-export default userSchema;
+export default model("User", userSchema);
