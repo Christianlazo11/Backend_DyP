@@ -1,4 +1,6 @@
 import Products from "../models/Products";
+import cloudinary from "../services/cloudinary.service";
+import multer from "multer";
 
 const getAllProducts = async (req, res) => {
   try {
@@ -20,7 +22,16 @@ const getOneProduct = async (req, res) => {
 
 const createdProduct = async (req, res) => {
   try {
-    const { name, urlImage, price, category } = req.body;
+    const urlImage = await cloudinary.uploader
+      .upload(req.file.path)
+      .then((resp) => {
+        return resp.url;
+      })
+      .catch((err) => {
+        err.message;
+      });
+
+    const { name, price, category } = req.body;
     const newProduct = new Products({ name, urlImage, price, category });
     const productSave = await newProduct.save();
     res.status(201).json(productSave);

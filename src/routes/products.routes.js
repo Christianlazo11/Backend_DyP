@@ -7,7 +7,7 @@ import upload from "../services/multer.service";
 router
   .get("/", productsController.getAllProducts)
   .get("/:id", productsController.getOneProduct)
-  .post("/", productsController.createdProduct)
+  .post("/", upload.single("img"), productsController.createdProduct)
   .put("/:id", productsController.updatedProduct)
   .delete("/:id", productsController.deletedProduct)
   .post("/uploadImage", upload.single("avatar"), (req, res) => {
