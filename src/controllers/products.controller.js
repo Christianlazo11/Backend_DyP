@@ -1,6 +1,7 @@
 import Products from "../models/Products";
 import cloudinary from "../services/cloudinary.service";
 import multer from "multer";
+import fs from "fs";
 
 const getAllProducts = async (req, res) => {
   try {
@@ -22,17 +23,23 @@ const getOneProduct = async (req, res) => {
 
 const createdProduct = async (req, res) => {
   try {
-    const urlImage = await cloudinary.uploader
+    const resp = await cloudinary.uploader
       .upload(req.file.path)
       .then((resp) => {
-        return resp.url;
+        return resp;
       })
       .catch((err) => {
         err.message;
       });
-
+    fs.unlinkSync(req.file.path);
     const { name, price, category } = req.body;
-    const newProduct = new Products({ name, urlImage, price, category });
+    const newProduct = new Products({
+      name,
+      urlImage: resp.url,
+      imageId: resp.public_id,
+      price,
+      category,
+    });
     const productSave = await newProduct.save();
     res.status(201).json(productSave);
   } catch (err) {
@@ -43,19 +50,33 @@ const createdProduct = async (req, res) => {
 const updatedProduct = async (req, res) => {
   try {
     let data = req.body;
+    const { id } = req.params;
+
     if (req.file) {
-      const urlImage = await cloudinary.uploader
+      const productUser = await Products.findById(id)
+        .then((resp) => resp)
+        .catch((err) => console.log(err));
+      const resp = await cloudinary.uploader
         .upload(req.file.path)
         .then((resp) => {
-          return resp.url;
+          return resp;
         })
         .catch((err) => {
           err.message;
         });
 
-      data = { ...data, urlImage: urlImage };
+      fs.unlinkSync(req.file.path);
+      if (productUser.urlImage) {
+        cloudinary.api.delete_resources(productUser.avatar_public_id, function (
+          error,
+          result
+        ) {
+          console.log(result, error);
+        });
+      }
+      data = { ...data, urlImage: resp.url, imageId: resp.public_id };
     }
-    const product = await Products.findByIdAndUpdate(req.params.id, data, {
+    const product = await Products.findByIdAndUpdate(id, data, {
       new: true,
     });
 
